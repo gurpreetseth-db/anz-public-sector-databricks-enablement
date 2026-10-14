@@ -18,7 +18,7 @@ DASHBOARD_ID    = "01f1c756879d1eb8b3c708f312c35bb4"
 LB_ENDPOINT     = "projects/anz-emergency-mgmt/branches/production/endpoints/primary"
 LB_HOST         = "ep-proud-bird-d6baoihj.database.ap-southeast-2.cloud.databricks.com"
 LB_DB           = "emergency_mgmt"
-LB_USER         = "gurpreet.sethi@databricks.com"
+LB_USER         = os.environ.get("DATABRICKS_SP_CLIENT_ID", "5aafef4b-2fd9-45a2-b359-4e92e51f0f1f")
 LANDING_ZONE    = "/Volumes/gsethi/emergency_bronze/landing_zone"
 WORKSPACE_URL   = os.environ.get("DATABRICKS_HOST", "")
 
