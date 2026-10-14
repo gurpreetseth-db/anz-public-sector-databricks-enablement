@@ -1,0 +1,21 @@
+
+body { background: #0D1117; font-family: Inter, -apple-system, sans-serif; }
+.nav-tabs { border-bottom-color: #30363D; }
+.nav-tabs .nav-link { color: #8B949E; border: none; border-bottom: 2px solid transparent; }
+.nav-tabs .nav-link.active { color: #58A6FF; background: transparent; border-bottom-color: #58A6FF; }
+.nav-tabs .nav-link:hover { color: #C9D1D9; border-bottom-color: #484F58; }
+.card { transition: border-color .2s; }
+.card:hover { border-color: #58A6FF !important; }
+.table { font-size: .82rem; }
+.table thead th { background: #161B22; position: sticky; top: 0; z-index: 1; }
+#genie-messages .msg-user { background: #161B22; border-left: 3px solid #58A6FF; padding: 10px 14px; margin-bottom: 8px; border-radius: 6px; }
+#genie-messages .msg-genie { background: #1C2128; border-left: 3px solid #3FB950; padding: 10px 14px; margin-bottom: 8px; border-radius: 6px; }
+#genie-messages .msg-genie .sql-trace { margin-top: 8px; }
+#genie-messages .msg-genie .sql-trace summary { color: #8B949E; cursor: pointer; font-size: .85rem; }
+#genie-messages .msg-genie .sql-trace pre { background: #0D1117; padding: 10px; border-radius: 4px; font-size: .78rem; color: #79C0FF; margin-top: 4px; overflow-x: auto; }
+.spinner-border-sm { width: 1rem; height: 1rem; }
+.badge-state { font-size: .75rem; padding: 4px 8px; }
+.badge-COMPLETED { background: #238636; }
+.badge-RUNNING, .badge-WAITING_FOR_RESOURCES { background: #1F6FEB; }
+.badge-FAILED { background: #DA3633; }
+.badge-CANCELED, .badge-IDLE { background: #484F58; }

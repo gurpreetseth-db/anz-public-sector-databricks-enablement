@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ANZ Emergency Command Centre</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+<!-- NAV -->
+<nav class="navbar navbar-expand-lg border-bottom" style="background:#0D1117">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-bold"><i class="bi bi-shield-check text-info me-2"></i>ANZ Emergency Command Centre</span>
+    <span class="badge bg-info text-dark ms-auto">Databricks App</span>
+  </div>
+</nav>
+
+<!-- TABS -->
+<ul class="nav nav-tabs px-3 pt-2" id="mainTabs" role="tablist" style="background:#0D1117">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-generate"><i class="bi bi-database-add me-1"></i>Generate Data</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-pipeline"><i class="bi bi-arrow-repeat me-1"></i>Process Data</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-genie"><i class="bi bi-chat-dots me-1"></i>Ask Genie</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-dashboard"><i class="bi bi-speedometer2 me-1"></i>Command Centre</a></li>
+</ul>
+
+<div class="tab-content p-3">
+
+<!-- ═══ TAB 1: GENERATE DATA ═══ -->
+<div class="tab-pane fade show active" id="tab-generate">
+  <h5 class="mb-3">Source Data Generation</h5>
+  <div class="row g-3">
+    <!-- Lakebase datasets -->
+    <div class="col-12"><h6 class="text-info"><i class="bi bi-server me-1"></i>Lakebase Postgres &mdash; Tabular Datasets</h6></div>
+    <div class="col-md-4" id="card-incidents">
+      <div class="card bg-dark border-secondary">
+        <div class="card-body">
+          <h6 class="card-title">Incidents</h6>
+          <p class="card-text small text-muted">Emergency incident records &rarr; <code>emergency.incidents</code></p>
+          <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text">Rows</span>
+            <input type="number" class="form-control gen-count" value="100" min="1" max="10000">
+          </div>
+          <button class="btn btn-sm btn-outline-info me-1 btn-gen" data-dataset="incidents" data-target="lakebase">
+            <i class="bi bi-lightning me-1"></i>Create Dataset</button>
+          <button class="btn btn-sm btn-outline-success btn-push" data-dataset="incidents" data-dest="lakebase" disabled>
+            <i class="bi bi-cloud-upload me-1"></i>Push</button>
+          <div class="mt-2 gen-status small"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4" id="card-regions">
+      <div class="card bg-dark border-secondary">
+        <div class="card-body">
+          <h6 class="card-title">Regions</h6>
+          <p class="card-text small text-muted">Reference dimension &rarr; <code>emergency.regions</code></p>
+          <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text">Rows</span>
+            <input type="number" class="form-control gen-count" value="15" min="1" max="100" disabled>
+          </div>
+          <button class="btn btn-sm btn-outline-info me-1 btn-gen" data-dataset="regions" data-target="lakebase">
+            <i class="bi bi-lightning me-1"></i>Create Dataset</button>
+          <button class="btn btn-sm btn-outline-success btn-push" data-dataset="regions" data-dest="lakebase" disabled>
+            <i class="bi bi-cloud-upload me-1"></i>Push</button>
+          <div class="mt-2 gen-status small"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4" id="card-resource_deployments">
+      <div class="card bg-dark border-secondary">
+        <div class="card-body">
+          <h6 class="card-title">Resource Deployments</h6>
+          <p class="card-text small text-muted">Personnel/equipment &rarr; <code>emergency.resource_deployments</code></p>
+          <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text">Rows</span>
+            <input type="number" class="form-control gen-count" value="200" min="1" max="10000">
+          </div>
+          <button class="btn btn-sm btn-outline-info me-1 btn-gen" data-dataset="resource_deployments" data-target="lakebase">
+            <i class="bi bi-lightning me-1"></i>Create Dataset</button>
+          <button class="btn btn-sm btn-outline-success btn-push" data-dataset="resource_deployments" data-dest="lakebase" disabled>
+            <i class="bi bi-cloud-upload me-1"></i>Push</button>
+          <div class="mt-2 gen-status small"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Volume datasets -->
+    <div class="col-12 mt-3"><h6 class="text-warning"><i class="bi bi-folder me-1"></i>UC Volume Landing Zone &mdash; Structured Files</h6></div>
+    <div class="col-md-6" id="card-citizen_reports">
+      <div class="card bg-dark border-secondary">
+        <div class="card-body">
+          <h6 class="card-title">Citizen Reports</h6>
+          <p class="card-text small text-muted">JSON &rarr; <code>landing_zone/citizen_reports/</code></p>
+          <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text">Records</span>
+            <input type="number" class="form-control gen-count" value="50" min="1" max="5000">
+          </div>
+          <button class="btn btn-sm btn-outline-info me-1 btn-gen" data-dataset="citizen_reports" data-target="volume">
+            <i class="bi bi-lightning me-1"></i>Create Dataset</button>
+          <button class="btn btn-sm btn-outline-warning btn-push" data-dataset="citizen_reports" data-dest="volume" disabled>
+            <i class="bi bi-cloud-upload me-1"></i>Push</button>
+          <div class="mt-2 gen-status small"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6" id="card-weather">
+      <div class="card bg-dark border-secondary">
+        <div class="card-body">
+          <h6 class="card-title">Weather Observations</h6>
+          <p class="card-text small text-muted">CSV &rarr; <code>landing_zone/weather/</code></p>
+          <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text">Records</span>
+            <input type="number" class="form-control gen-count" value="100" min="1" max="5000">
+          </div>
+          <button class="btn btn-sm btn-outline-info me-1 btn-gen" data-dataset="weather" data-target="volume">
+            <i class="bi bi-lightning me-1"></i>Create Dataset</button>
+          <button class="btn btn-sm btn-outline-warning btn-push" data-dataset="weather" data-dest="volume" disabled>
+            <i class="bi bi-cloud-upload me-1"></i>Push</button>
+          <div class="mt-2 gen-status small"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- preview area -->
+  <div class="mt-3" id="data-preview" style="display:none">
+    <h6>Preview <span id="preview-label" class="text-info"></span>
+      <button class="btn btn-sm btn-outline-secondary ms-2" onclick="document.getElementById('data-preview').style.display='none'">Close</button>
+    </h6>
+    <div id="preview-content" class="table-responsive" style="max-height:400px;overflow:auto"></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: PROCESS DATA ═══ -->
+<div class="tab-pane fade" id="tab-pipeline">
+  <div class="d-flex align-items-center mb-3">
+    <h5 class="mb-0 me-3">SDP Medallion Pipeline</h5>
+    <button class="btn btn-info btn-sm" id="btn-run-pipeline"><i class="bi bi-play-fill me-1"></i>Run Pipeline</button>
+    <button class="btn btn-outline-secondary btn-sm ms-2" id="btn-refresh-history"><i class="bi bi-arrow-clockwise me-1"></i>Refresh</button>
+  </div>
+  <div id="pipeline-status" class="mb-3"></div>
+  <h6>Run History</h6>
+  <div id="pipeline-history">
+    <div class="text-muted">Click Refresh to load run history...</div>
+  </div>
+</div>
+
+<!-- ═══ TAB 3: ASK GENIE ═══ -->
+<div class="tab-pane fade" id="tab-genie">
+  <h5 class="mb-3"><i class="bi bi-chat-dots text-info me-1"></i>Ask Genie</h5>
+  <div id="genie-messages" class="mb-3" style="max-height:500px;overflow:auto"></div>
+  <div class="input-group">
+    <input type="text" class="form-control" id="genie-input"
+           placeholder="Ask a question about emergency incidents, response times, resources..."
+           onkeydown="if(event.key==='Enter')document.getElementById('btn-genie-ask').click()">
+    <button class="btn btn-info" id="btn-genie-ask"><i class="bi bi-send me-1"></i>Ask</button>
+  </div>
+  <div class="mt-2 small text-muted">Try: "How many critical incidents occurred this year?" or "Show average response time by agency"</div>
+</div>
+
+<!-- ═══ TAB 4: COMMAND CENTRE ═══ -->
+<div class="tab-pane fade" id="tab-dashboard">
+  <h5 class="mb-2"><i class="bi bi-speedometer2 text-info me-1"></i>Executive Dashboard</h5>
+  <div id="dashboard-container">
+    <iframe id="dashboard-iframe" style="width:100%;height:calc(100vh - 180px);border:1px solid #30363D;border-radius:8px"
+            src="about:blank"></iframe>
+  </div>
+  <div class="mt-2 small text-muted">
+    <a id="dashboard-link" href="#" target="_blank" class="text-info">Open in new tab <i class="bi bi-box-arrow-up-right"></i></a>
+  </div>
+</div>
+
+</div><!-- /tab-content -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>
