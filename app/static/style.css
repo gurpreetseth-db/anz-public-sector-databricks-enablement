@@ -13,6 +13,12 @@ body { background: #0D1117; font-family: Inter, -apple-system, sans-serif; }
 #genie-messages .msg-genie .sql-trace { margin-top: 8px; }
 #genie-messages .msg-genie .sql-trace summary { color: #8B949E; cursor: pointer; font-size: .85rem; }
 #genie-messages .msg-genie .sql-trace pre { background: #0D1117; padding: 10px; border-radius: 4px; font-size: .78rem; color: #79C0FF; margin-top: 4px; overflow-x: auto; }
+.genie-chart-wrap { background: #161B22; border-radius: 8px; padding: 12px; border: 1px solid #30363D; }
+.genie-table-wrap { border-radius: 6px; border: 1px solid #30363D; }
+.genie-table-wrap .table { margin-bottom: 0; }
+.genie-table-wrap .table th { background: #161B22; font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .3px; color: #58A6FF; }
+.genie-table-wrap .table td { font-size: .82rem; }
+.genie-table-wrap .table td.text-end { font-variant-numeric: tabular-nums; }
 .spinner-border-sm { width: 1rem; height: 1rem; }
 .badge-state { font-size: .75rem; padding: 4px 8px; }
 .badge-COMPLETED { background: #238636; }
