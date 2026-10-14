@@ -304,24 +304,57 @@ async def genie_poll(conversation_id: str, message_id: str):
         msg = w.genie.get_message(space_id=SPACE_ID,
                                   conversation_id=conversation_id,
                                   message_id=message_id)
-        result = {"status": msg.status.value if msg.status else "UNKNOWN"}
+        status = msg.status.value if msg.status else "UNKNOWN"
+        result = {"status": status}
+
+        # Extract text, SQL, and description from attachments
         if hasattr(msg, "attachments") and msg.attachments:
             for att in msg.attachments:
                 if hasattr(att, "query") and att.query:
-                    result["sql"] = att.query.query if hasattr(att.query,"query") else str(att.query)
-                    if hasattr(att.query, "description"):
-                        result["description"] = att.query.description
+                    result["sql"] = getattr(att.query, "query", str(att.query))
+                    desc = getattr(att.query, "description", None)
+                    if desc:
+                        result["description"] = desc
                 if hasattr(att, "text") and att.text:
-                    result["text"] = att.text.content if hasattr(att.text,"content") else str(att.text)
-        if hasattr(msg, "result") and msg.result:
-            r = msg.result
-            if hasattr(r, "statement_response") and r.statement_response:
-                sr = r.statement_response
-                if hasattr(sr, "manifest") and sr.manifest and hasattr(sr.manifest, "schema"):
-                    cols = [c.name for c in sr.manifest.schema.columns] if sr.manifest.schema and sr.manifest.schema.columns else []
-                    result["columns"] = cols
-                if hasattr(sr, "result") and sr.result and hasattr(sr.result, "data_array"):
-                    result["rows"] = sr.result.data_array or []
+                    result["text"] = getattr(att.text, "content", str(att.text))
+
+        # Fetch query result rows when message is COMPLETED
+        if status == "COMPLETED":
+            try:
+                # Use get_message_query_result to fetch data rows
+                qr = w.genie.get_message_query_result(
+                    space_id=SPACE_ID,
+                    conversation_id=conversation_id,
+                    message_id=message_id)
+                # Extract columns from manifest
+                if hasattr(qr, "statement_response") and qr.statement_response:
+                    sr = qr.statement_response
+                    if hasattr(sr, "manifest") and sr.manifest:
+                        schema = getattr(sr.manifest, "schema", None)
+                        if schema and hasattr(schema, "columns") and schema.columns:
+                            result["columns"] = [c.name for c in schema.columns]
+                    if hasattr(sr, "result") and sr.result:
+                        result["rows"] = getattr(sr.result, "data_array", []) or []
+                # Fallback: try columns/rows at top level
+                if "columns" not in result and hasattr(qr, "columns"):
+                    result["columns"] = qr.columns
+                if "rows" not in result and hasattr(qr, "rows"):
+                    result["rows"] = qr.rows
+            except Exception as qe:
+                logger.warning(f"Could not fetch query result: {qe}")
+                # Fallback: try statement_execution if query_result has statement_id
+                if hasattr(msg, "query_result") and msg.query_result:
+                    sid = getattr(msg.query_result, "statement_id", None)
+                    if sid:
+                        try:
+                            stmt = w.statement_execution.get_statement(sid)
+                            if stmt.manifest and stmt.manifest.schema and stmt.manifest.schema.columns:
+                                result["columns"] = [c.name for c in stmt.manifest.schema.columns]
+                            if stmt.result and stmt.result.data_array:
+                                result["rows"] = stmt.result.data_array
+                        except Exception as se:
+                            logger.warning(f"Statement fallback failed: {se}")
+
         return result
     except Exception as e:
         logger.exception("Genie poll failed")
