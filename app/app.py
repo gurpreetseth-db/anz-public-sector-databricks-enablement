@@ -67,9 +67,13 @@ def _rand_ts(year, month):
 
 def _get_pg_conn():
     import psycopg2
-    cred = w.postgres.generate_database_credential(endpoint=LB_ENDPOINT)
+    # Use REST API since w.postgres may not exist in all SDK versions
+    resp = w.api_client.do("POST",
+        "/api/2.0/lakebase/generate-database-credential",
+        body={"endpoint": LB_ENDPOINT})
+    token = resp.get("token") or resp.get("password", "")
     return psycopg2.connect(host=LB_HOST, port=5432, dbname=LB_DB,
-                            user=LB_USER, password=cred.token, sslmode="require")
+                            user=LB_USER, password=token, sslmode="require")
 
 # ── generators ──────────────────────────────────────────────────────────
 def gen_incidents(n):
@@ -231,8 +235,7 @@ async def push_volume(dataset: str, request: Request):
             fname = f"citizen_reports_{yr}_{mo}.json"
             fpath = f"{LANDING_ZONE}/citizen_reports/{fname}"
             content = "\n".join(json.dumps(r) for r in rows)
-            with open(fpath, "w") as f:
-                f.write(content)
+            w.files.upload(fpath, io.BytesIO(content.encode("utf-8")), overwrite=True)
         elif dataset == "weather":
             fname = f"weather_{yr}_{mo}.csv"
             fpath = f"{LANDING_ZONE}/weather/{fname}"
@@ -240,8 +243,7 @@ async def push_volume(dataset: str, request: Request):
             writer = csv.DictWriter(buf, fieldnames=list(rows[0].keys()))
             writer.writeheader()
             writer.writerows(rows)
-            with open(fpath, "w") as f:
-                f.write(buf.getvalue())
+            w.files.upload(fpath, io.BytesIO(buf.getvalue().encode("utf-8")), overwrite=True)
         else:
             return JSONResponse({"error": f"Unknown volume dataset: {dataset}"}, 400)
         return {"status": "ok", "path": fpath, "rows_written": len(rows)}
