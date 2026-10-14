@@ -67,10 +67,10 @@ def _rand_ts(year, month):
 
 def _get_pg_conn():
     import psycopg2
-    # Use REST API since w.postgres may not exist in all SDK versions
-    resp = w.api_client.do("POST",
-        "/api/2.0/lakebase/generate-database-credential",
-        body={"endpoint": LB_ENDPOINT})
+    # Use REST API to /api/2.0/postgres/credentials (the path w.postgres uses)
+    headers = {"Accept": "application/json", "Content-Type": "application/json"}
+    resp = w.api_client.do("POST", "/api/2.0/postgres/credentials",
+                           body={"endpoint": LB_ENDPOINT}, headers=headers)
     token = resp.get("token") or resp.get("password", "")
     return psycopg2.connect(host=LB_HOST, port=5432, dbname=LB_DB,
                             user=LB_USER, password=token, sslmode="require")
